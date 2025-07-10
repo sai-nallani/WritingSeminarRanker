@@ -178,6 +178,8 @@ function startMergeSort() {
     leftIdx = 0;
     rightIdx = 0;
     rankingDone = false;
+    history = [];
+    saveStateToStorage();
     nextMerge();
 }
 
@@ -279,6 +281,7 @@ function handleMergePick(pick) {
         mergeResult.push(rightArr[rightIdx]);
         rightIdx++;
     }
+    saveStateToStorage();
     renderMergePair();
 }
 
@@ -306,6 +309,7 @@ document.getElementById('show-ranking').onclick = function () {
     document.getElementById('final-ranking').innerHTML = html;
     this.style.display = 'none';
     document.getElementById('undo-btn').style.display = 'none';
+    saveStateToStorage();
 };
 
 // --- Undo Button ---
@@ -336,6 +340,7 @@ undoBtn.onclick = function () {
     leftIdx = prev.leftIdx;
     rightIdx = prev.rightIdx;
     rankingDone = prev.rankingDone;
+    saveStateToStorage();
     if (rankingDone) {
         renderLiveRanking();
         document.getElementById('card-container').innerHTML = "<b>All done!</b>";
@@ -349,6 +354,38 @@ undoBtn.onclick = function () {
 };
 
 document.getElementById('ranker-app').insertBefore(undoBtn, document.getElementById('show-ranking'));
+
+// --- Reset Progress Button ---
+const resetBtn = document.createElement('button');
+resetBtn.id = 'reset-btn';
+resetBtn.innerText = 'Reset Progress';
+resetBtn.style.display = '';
+resetBtn.style.margin = '20px 0 0 12px';
+resetBtn.style.padding = '10px 24px';
+resetBtn.style.background = '#fff';
+resetBtn.style.color = '#e77500';
+resetBtn.style.border = '2px solid #e77500';
+resetBtn.style.borderRadius = '8px';
+resetBtn.style.fontSize = '1em';
+resetBtn.style.fontWeight = 'bold';
+resetBtn.style.cursor = 'pointer';
+resetBtn.style.boxShadow = '0 2px 8px #e7750033';
+resetBtn.style.transition = 'background .18s';
+resetBtn.onmouseover = () => resetBtn.style.background = '#fff8f0';
+resetBtn.onmouseout = () => resetBtn.style.background = '#fff';
+resetBtn.onclick = function () {
+    if (confirm('Are you sure you want to reset your progress? This will erase your ranking and cannot be undone.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        startMergeSort();
+        renderMergeSortVisualizer();
+        document.getElementById('final-ranking').innerHTML = '';
+        document.getElementById('show-ranking').style.display = '';
+        document.getElementById('undo-btn').style.display = 'none';
+    }
+};
+
+// Insert the reset button next to the undo button
+document.getElementById('ranker-app').insertBefore(resetBtn, document.getElementById('show-ranking'));
 
 // Call this function to render the merge sort visualizer
 function renderMergeSortVisualizer() {
@@ -450,6 +487,103 @@ undoBtn.onclick = function () {
     leftIdx = prev.leftIdx;
     rightIdx = prev.rightIdx;
     rankingDone = prev.rankingDone;
+    saveStateToStorage();
+    if (rankingDone) {
+        renderLiveRanking();
+        document.getElementById('card-container').innerHTML = "<b>All done!</b>";
+        document.getElementById('progress').innerText = '';
+        document.getElementById('show-ranking').style.display = '';
+        document.getElementById('undo-btn').style.display = history.length > 0 ? '' : 'none';
+    } else {
+        renderMergePair();
+    }
+    renderMergeSortVisualizer();
+};
+
+// --- Local Storage ---
+const STORAGE_KEY = 'writing-seminar-ranker-state';
+
+function saveStateToStorage() {
+    const state = {
+        courseNames: [...courseNames],
+        mergeQueue: mergeQueue.map(arr => [...arr]),
+        mergeResult: [...mergeResult],
+        leftArr: [...leftArr],
+        rightArr: [...rightArr],
+        leftIdx,
+        rightIdx,
+        rankingDone,
+        history: history.map(h => ({
+            mergeQueue: h.mergeQueue.map(arr => [...arr]),
+            mergeResult: [...h.mergeResult],
+            leftArr: [...h.leftArr],
+            rightArr: [...h.rightArr],
+            leftIdx: h.leftIdx,
+            rightIdx: h.rightIdx,
+            rankingDone: h.rankingDone
+        }))
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadStateFromStorage() {
+    const state = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (!state) return false;
+    courseNames.length = 0;
+    state.courseNames.forEach(n => courseNames.push(n));
+    mergeQueue = state.mergeQueue.map(arr => [...arr]);
+    mergeResult = [...state.mergeResult];
+    leftArr = [...state.leftArr];
+    rightArr = [...state.rightArr];
+    leftIdx = state.leftIdx;
+    rightIdx = state.rightIdx;
+    rankingDone = state.rankingDone;
+    history = (state.history || []).map(h => ({
+        mergeQueue: h.mergeQueue.map(arr => [...arr]),
+        mergeResult: [...h.mergeResult],
+        leftArr: [...h.leftArr],
+        rightArr: [...h.rightArr],
+        leftIdx: h.leftIdx,
+        rightIdx: h.rightIdx,
+        rankingDone: h.rankingDone
+    }));
+    return true;
+}
+
+// --- Patch: Save state after every change ---
+function handleMergePick(pick) {
+    // Save state for undo
+    history.push({
+        mergeQueue: mergeQueue.map(arr => [...arr]),
+        mergeResult: [...mergeResult],
+        leftArr: [...leftArr],
+        rightArr: [...rightArr],
+        leftIdx,
+        rightIdx,
+        rankingDone
+    });
+    if (pick === 'left') {
+        mergeResult.push(leftArr[leftIdx]);
+        leftIdx++;
+    } else {
+        mergeResult.push(rightArr[rightIdx]);
+        rightIdx++;
+    }
+    saveStateToStorage();
+    renderMergePair();
+}
+
+undoBtn.onclick = function () {
+    if (history.length === 0) return;
+    let prev = history.pop();
+    mergeQueue = prev.mergeQueue.map(arr => [...arr]);
+    mergeResult = [...prev.mergeResult];
+    leftArr = [...prev.leftArr];
+    rightArr = [...prev.rightArr];
+    leftIdx = prev.leftIdx;
+    rightIdx = prev.rightIdx;
+    rankingDone = prev.rankingDone;
+    saveStateToStorage();
     if (rankingDone) {
         renderLiveRanking();
         document.getElementById('card-container').innerHTML = "<b>All done!</b>";
@@ -463,4 +597,22 @@ undoBtn.onclick = function () {
 };
 
 // Initial render
-startMergeSort();
+// startMergeSort();
+
+// --- On page load, try to load state ---
+window.addEventListener('DOMContentLoaded', () => {
+    if (!loadStateFromStorage()) {
+        startMergeSort();
+    } else {
+        if (rankingDone) {
+            renderLiveRanking();
+            document.getElementById('card-container').innerHTML = "<b>All done!</b>";
+            document.getElementById('progress').innerText = '';
+            document.getElementById('show-ranking').style.display = '';
+            document.getElementById('undo-btn').style.display = history.length > 0 ? '' : 'none';
+        } else {
+            renderMergePair();
+        }
+        renderMergeSortVisualizer();
+    }
+});
