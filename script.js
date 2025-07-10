@@ -401,6 +401,7 @@ function renderMergeSortVisualizer() {
     let html = `<h4 style="color:#e77500;margin-bottom:8px;">Merge Sort Visualizer</h4>`;
     html += `<div style="display:flex;flex-wrap:wrap;gap:10px;">`;
     mergeQueue.forEach((arr, i) => {
+        if (arr.length === 0) return; // Skip empty arrays
         html += `<div style="background:#fff8f0;border:1.5px solid #e77500;border-radius:7px;padding:7px 12px;min-width:70px;">
             <b>Group ${i+1}</b><br>
             <span style="font-size:0.98em;">${arr.map(n => `<span>${n}</span>`).join(', ')}</span>
