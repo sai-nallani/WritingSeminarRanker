@@ -1,0 +1,156 @@
+body {
+    background: #f7f6f2;
+    font-family: 'Latin Modern Sans', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#ranker-app {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px #0002;
+    padding: 32px 24px 40px 24px;
+    border: 3px solid #e77500;
+}
+
+#ranker-app h2 {
+    color: #e77500;
+    text-align: center;
+    font-size: 2.1em;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+}
+
+#card-container {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.course-card {
+    flex: 1;
+    border: 2.5px solid #e77500;
+    border-radius: 14px;
+    padding: 32px 28px 28px 28px;
+    /* more padding */
+    background: #fff8f0;
+    box-shadow: 0 2px 12px #0001;
+    cursor: pointer;
+    transition: box-shadow .18s, transform .18s, border-color .18s;
+    min-width: 0;
+    max-width: 680px;
+    /* wider */
+    min-height: 380px;
+    /* taller */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.course-card:hover {
+    box-shadow: 0 6px 24px #e7750033;
+    transform: translateY(-4px) scale(1.03);
+    border-color: #ff9800;
+}
+
+.course-title {
+    margin-top: 0;
+    color: #222;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: 7px;
+    letter-spacing: 0.5px;
+}
+
+.course-instructor {
+    font-size: 1em;
+    color: #e77500;
+    margin-bottom: 7px;
+}
+
+.course-timings {
+    font-size: 0.97em;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+.course-description {
+    font-size: 1.05em;
+    color: #333;
+    margin-bottom: 12px;
+    flex: 1;
+    overflow: auto;
+    max-height: 320px;
+    /* allow more text to show */
+}
+
+.pick-label {
+    margin-top: 10px;
+    text-align: center;
+    color: #fff;
+    background: #e77500;
+    border-radius: 8px;
+    padding: 7px 0 5px 0;
+    font-weight: bold;
+    font-size: 1.08em;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 4px #e7750033;
+}
+
+#progress {
+    margin-top: 20px;
+    text-align: center;
+    color: #555;
+    font-size: 1.08em;
+}
+
+#show-ranking {
+    display: none;
+    margin: 30px auto 0 auto;
+    padding: 12px 28px;
+    background: #e77500;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px #e7750033;
+    transition: background .18s;
+}
+
+#show-ranking:hover {
+    background: #ff9800;
+}
+
+#final-ranking {
+    margin-top: 30px;
+    background: #fff8f0;
+    border-radius: 10px;
+    padding: 18px 18px 10px 18px;
+    border: 2px solid #e77500;
+}
+
+#final-ranking ol {
+    padding-left: 22px;
+}
+
+#final-ranking li {
+    margin-bottom: 7px;
+    font-size: 1.08em;
+}
+
+@media (max-width: 1100px) {
+    #card-container {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .course-card {
+        max-width: 100%;
+        min-height: 320px;
+    }
+}
