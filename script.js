@@ -422,7 +422,7 @@ function renderLiveRanking() {
     let final = mergeQueue[0];
     let html = '<h3 style="color:#e77500;">Live Ranking:</h3><ol>';
     final.forEach(name => {
-        html += `<li><b>${name}</b> <span style="color:#888;font-size:0.95em;">(${courses[name].course_instructor})</span></li>`;
+        html += `<li><b>${name}</b> <span style="color:#888;font-size:0.95em;">(${courses[name].course_instructor})</span> <span style="color:#aaa;font-size:0.93em;">${courses[name].course_timings.join(' | ')}</span></li>`;
     });
     html += '</ol>';
     document.getElementById('final-ranking').innerHTML = html;
